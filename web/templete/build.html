@@ -1,0 +1,63 @@
+<img src="img/logo.png"></img>
+<h1 class="title">Build Packages</h1>
+<div id="mach" class="list-group">
+<script>
+
+var machineID = "";
+var machineInfo = "";
+
+$("#machineModal").on('hidden.bs.modal', function () {
+    console.log("modal is hidden")
+    machineID = ""
+    machineInfo = ""
+    $("#stderr").text("") 
+});
+
+
+$("#machineModal").on('shown.bs.modal', function () {
+
+$('.modal-content').css('width','80%')
+$('.modal-content').css('margin-left','40%');
+
+
+
+        console.log("model is open")
+        makeConnection();
+        var cmd = "cat ../../incoming/Qt-Public/"+machineID + "/debian/control"
+	sendMessage(cmd);
+	//console.log(cmd);        
+	
+	ws.onmessage = function(arguments) {
+               // console.log("Info about Machine " +  arguments.data)        
+	  	machineInfo = arguments.data
+		$("#stderr").append(" <pre class='list-group-item'>"+machineInfo+"</pre>")
+        }
+});
+var app;
+
+function getMachines(){
+makeConnection();
+sendMessage("find ../../incoming/Qt-Public/ -type d -maxdepth 1|sed \"s|../../incoming/Qt-Public/||g\"");
+   ws.onmessage = function(arguments) {
+	var word = arguments.data //.replace(" ",", ");
+  	var wordarray = new Array();
+  	wordarray = word.split(" ");
+  	for (var i = 0; i < wordarray.length; i++) 
+  	{
+  		 $("#mach").append("<a id='" + wordarray[i] + "' class='list-group-item' data-toggle='modal' data-target='#machineModal'  >"+ wordarray[i] + "</a>")
+  	
+	}
+	
+	$(".list-group-item").click(function(){
+     		machineID = this.id;
+		$("#sub-modal-title").text(machineID);
+     		$(".modal-title").text("Build Report");
+	});
+    }
+}// get machines 
+
+getMachines()
+
+</script>
+</div>
+

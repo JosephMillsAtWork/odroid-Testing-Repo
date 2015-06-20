@@ -1,0 +1,29 @@
+#!/bin/bash
+## This will be for daily
+set -x
+. common/checkToolkits
+. common/common.sh
+
+cd $rootDir
+## remove the old toochains
+rm -r $rootDir/toolchains/
+mkdir -p $rootDir/toolchains
+## check to make sure that all the cross compile toolkits are in fact installed
+allKits
+
+## Install all dependencys for the build
+./common/deps
+
+## 1 = version Number
+## 2 = codename of distro only debian is supported at the mement
+## board in the commo0n common file for the board var
+
+## SOMETHIGN IS WRONG HERE
+# echo "Joseph The board to build on is           $board"
+
+if [[ $board == "U" ]];
+then
+./odroid-U.sh 0.2 $codeName
+else
+./odroid-C.sh 0.2 $codeName
+fi

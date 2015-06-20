@@ -1,0 +1,83 @@
+<img src="img/logo.png"></img>
+<h1 id='title'>Packages that are ready to push to repo</h1>
+<!-- Modal -->
+<div id="machineModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h2 class="modal-title"></h2>
+      </div>
+      <div class="modal-body">
+	<h4 id="sub-modal-title"></h4>
+	  <form role="form">
+		<div class="form-group">
+			<input class="form-control" id="searchinput" type="search" placeholder="Search ..." />
+		</div>
+	        <div id="searchlist" class="list-group"></div>
+          </form>
+      </div>
+      <div class="modal-footer">
+<!--FIXME add later        <button type="button" class="close" data-dismiss="modal">show more</button> -->
+	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="mach" class="list-group">
+<script>
+
+var machineID = "";
+var machineInfo = "";
+
+$("#machineModal").on('hidden.bs.modal', function () {
+    console.log("modal is hidden")
+    machineID = ""
+    machineInfo = ""
+    $("#searchlist").text("") 
+});
+
+
+$("#machineModal").on('shown.bs.modal', function () {
+        console.log("model is open")
+        makeConnection();
+        var cmd = "dpkg-deb  -I ../../outgoing/"+machineID+"| awk \'/Package: /,/Description: /\'"
+
+	sendMessage(cmd);
+	//console.log(cmd);        
+	
+	ws.onmessage = function(arguments) {
+               // console.log("Info about Machine " +  arguments.data)        
+	  	machineInfo = arguments.data
+		$("#searchlist").append("<a class='list-group-item'><span>"+machineInfo+"</span></a>")
+        }
+});
+
+
+var app;
+
+function getMachines(){
+makeConnection();
+sendMessage("ls ../../outgoing/*.deb | sed \'s|.*/||g\'");
+   ws.onmessage = function(arguments) {
+	var word = arguments.data //.replace(" ",", ");
+  	var wordarray = new Array();
+  	wordarray = word.split(" ");
+  	for (var i = 0; i < wordarray.length; i++) 
+  	{
+  		 $("#mach").append("<a id='" + wordarray[i] + "' class='list-group-item' data-toggle='modal' data-target='#machineModal'  >"+ wordarray[i] + "</a>")
+	}
+	
+	$(".list-group-item").click(function(){
+     		machineID = this.id;
+		$("#sub-modal-title").text(machineID);
+     		$(".modal-title").text("Build Report");
+	});
+    }
+}// get machines 
+
+getMachines()
+
+</script>
+</div>

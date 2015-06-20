@@ -1,0 +1,100 @@
+<script type="text/javascript" >
+$( document ).ready(function() {
+   $("#loader").load("templete/main.html");
+  // $("#menuButton").hide();
+
+});
+
+$( "#index" ).click(function() {
+   $("#loader").load("templete/main.html");
+});
+
+$( "#logs" ).click(function() {
+  $("#loader").load("templete/logs.html");
+});
+
+$( "#stats" ).click(function() {
+  $("#loader").load("templete/stats.html");
+
+
+
+});
+
+$( "#packages" ).click(function() {
+  $("#loader").load("templete/packages.html");
+});
+
+$("#shutMenu").click(function(){
+	$("#menuButton").show();
+        $("#sideBar").hide("slow");
+        $("#loader").removeClass("col-md-10 col-sm-09");
+        $("#loader").removeClass("col-sm-offset-3")
+        $("#loader").removeClass("col-md-offset-2")
+        $("#loader").addClass("col-md-12 col-sm-12", 1000, "easeOutBounce");
+        
+});
+$("#menuButton").click(function(){
+        $("#sideBar").show("slow")
+        $("#loader").removeClass("col-md-12 col-sm-12")
+        $("#loader").addClass("col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2")
+        $("#menuButton").hide("slow")
+});
+
+</script>
+<div id="root" class="container-fluid" style="backgound-color:#a1a1a1"> 
+<button id="menuButton" type="button" class="btn btn-default btn-sm">
+   <span class="glyphicon glyphicon-menu-hamburger"></span>
+   open menu
+</button>
+
+<div class="row">            
+<!-- left hand side basr -->
+	  <div id="sideBar" class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+ 	    <li id="shutMenu">
+                <a>
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                Shut Menu
+                </a>
+            </li>
+
+
+            <li id="index">
+		<a>
+		<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>
+		Machines
+		</a>
+	    </li>
+            <li id="logs">
+		<a>
+		<span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+		Log Files
+		</a>
+	    </li>
+            <li id="stats">
+		<a>
+		<span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+			Statistics
+		</a>
+	    </li>
+            <li id="packages">
+		<a>
+		<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>
+			Packages
+		</a>
+	    </li>
+          
+	   </ul>
+        </div>
+
+
+<!--This also ends in the footer file -->
+<div id="loader" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+
+
+
+
+
+
+

@@ -1,0 +1,350 @@
+<img src="img/logo.png"></img>
+<h1>Packages that can be Built</h1>
+
+<!-- Modal -->
+<div id="machineModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h2 class="modal-title">Package Info</h2>
+        <button id='buildPackage' type="button" class="btn btn-default">Build Package</button>
+	<button id='editFile' type="button" class="btn btn-default">Edit A File</button>
+	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    </div>
+      <div class="modal-body">
+        <h4 id="sub-modal-title"></h4>
+            <img src="../img/loader.gif" id="indicator" class="img-responsive center-block" />
+	    <pre id="stderr" style="white-space:pre-line;">
+        </pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Builder Modal -->
+<div id="builderModal" class="modal fade" role="dialog" data-backdrop="static" style="overflow:auto">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id='anotherclose' type="button" class="close" data-dismiss="modal">&times;</button>
+        <h2 class="modal-title">Build the Package</h2>
+      </div>
+      <div class="modal-body">
+        <h4 id="builder-sub-modal-title"></h4>
+            <img src="../img/loader.gif" id="builderIndicator" class="img-responsive center-block" />
+		<div id="jumboQuestion" class="jumbotron">
+		<h2>Are you sure that you want to build the package</h2>
+		<h2 id="pacTitle">Mumble</h2> 
+		<p>Once you start this build You can not leave this page. Doing so could cause a number of bad things to happen. 
+		After It is done building You will see a button that says close. It is safe to leave after that
+		</p>
+		<form role="form">
+		<div class="form-group">
+  			<label for="dchText">Changes that you did to the last commit:</label>
+  			<input type="text" class="form-control" id="dchText">
+		</div>
+		</form>
+		<button id='createBuilderBot' type="button" class="btn btn-primary btn-lg btn-block">Yes</button>
+                <button id="noBuildButton" type="button" class="btn btn-default btn-lg btn-block">No</button>
+		</div>
+        	<pre id="builderStderr" style="white-space:pre-line;"></pre>
+	</div>
+      <div class="modal-footer">
+        <!--FIXME add later        <button type="button" class="close" data-dismiss="modal">show more</button> -->
+        <button id="openLaterClose" type="button" class="btn btn-default" data-dismiss="modal">Save To Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- File  Modal -->
+<div id="fileModal" class="modal fade" role="dialog" style="overflow:auto;">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h2 class="modal-title">Pick a File to Edit</h2>
+      </div> 
+      <div class="modal-body">
+        <h4 id="sub-modal-title"></h4>
+            <img src="../img/loader.gif" id="fileIndicator" class="img-responsive center-block" />
+      	<div id="lsFiles" class="list-group"></div>
+
+	</div> 
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Editor  Modal -->
+<div id="editorModal" class="modal fade" role="dialog" style="overflow:auto;">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h2 class="modal-title">Editing File</h2>
+      </div>
+      <div class="modal-body">
+        <h4 id="editor-sub-modal-title"></h4>
+	    <p>Be careful when editing some files keep in mind that there are tabs and what not for some programming langs </p>
+            <img src="../img/loader.gif" id="fileEditorIndicator" class="img-responsive center-block" />
+		<textarea class="form-control" rows="35" id="fileEditorBox"></textarea>
+	</div>
+	<button id='saveFile' type="button" class="btn btn-primary btn-lg btn-block">Save</button>
+	<button type="button" class="btn btn-lg btn-block" data-dismiss="modal">Close</button>
+       <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="form-group">
+                        <input class="form-control" id="searchinput" type="search" placeholder="Search Machines..." />
+</div>
+<div id="mach" class="list-group">
+        <img src="../img/loader.gif" id="mainIndicator" class="img-responsive center-block" />
+
+
+<script>
+///////////////////
+// file Models 
+////////////////////
+var filePath
+var editFilePath
+$("#editFile").click(function () {
+	$('#machineModal').modal('toggle');
+        $('#fileModal').modal('toggle');
+	filePath = $('#sub-modal-title').text()
+});
+
+$("#fileModal").on('shown.bs.modal', function () {
+     makeConnection();
+        var cmd = "find /home/joseph/Git/IASDevelopment/mangoDebianPackages/" + filePath  + " -type f ! -name \'*.gz\' ! -name \'*.xz\' ! -name \'*.build\' ! -name \'*.changes\' ! -name \'*.deb\' "
+        sendMessage(cmd);
+        ws.onmessage = function(arguments) {
+                $("#fileIndicator").hide()
+                fileInfo = arguments.data
+		$("#lsFiles").append("<li id='rightFile' class='list-group-item'>"+ fileInfo + "</li>")
+
+        }
+});
+
+
+$("#lsFiles").on('click', '#rightFile', function() {
+      editFilePath= $(this).html()
+      $('#fileModal').modal('toggle');
+      $('#editorModal').modal('toggle');
+      $("#editor-sub-modal-title").text( $(this).html() )
+});
+
+
+
+$("#fileModal").on('hidden.bs.modal', function () {
+	$('#lsFiles').empty();
+	filePath = ""
+});
+
+////////////////////
+// File Editor 
+//////////////////////
+//function addslashes( str ) {
+//    return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+//}
+
+$("#editorModal").on('shown.bs.modal', function () {
+  makeConnection();
+        var cmd = "cat "+ editFilePath
+        sendMessage(cmd);
+        ws.onmessage = function(arguments) {
+	        $("#fileEditorIndicator").hide()
+	        var fileData = arguments.data
+    		$("#fileEditorBox").append(fileData + "\n")
+    	}
+
+$("#saveFile").click(function(){ 
+	var nT = $("#fileEditorBox").val();
+	var newText = nT
+  makeConnection();
+        var cmd = "cat " + editFilePath + " > "
+        + editFilePath +".bak"
+        + " && cat << EOF > " + editFilePath + " " 
+	+ nT
+        + "EOF"
+	+ " && echo \"JOSEPHITSDONE\""
+   
+	console.log(cmd)
+	sendMessage(cmd);
+        ws.onmessage = function(arguments) {
+                var newData = arguments.data
+		if ( newData === "JOSEPHITSDONE" ){
+			alert("file saved succesfully")
+		}
+       }
+});// saved button
+});
+
+$("#editorModal").on('hidden.bs.modal', function () {
+	$("#fileEditorBox").empty();
+        filePath = ""
+        editFilePath = ""
+});
+
+
+
+
+/////////////////////
+// Builder Models 
+/////////////////////
+var gitDir = "/home/joseph/Git/IASDevelopment/mangoDebianPackages/";
+var buildName;
+var building = false
+
+$("#buildPackage").click(function () {
+	$("#builderStderr").text( "" );
+	$("#pacTitle").text(machineID);
+	buildName =  $("#pacTitle").text();
+  	$('#machineModal').modal('toggle');
+        $('#builderModal').modal('toggle');
+});
+$("#noBuildButton").click(function(){
+	 $('#builderModal').modal('toggle');
+	buildName = ""
+        $("#jumboQuestion").toggle()
+        $("#builderIndicator").toggle();
+        $("#builderStderr").toggle();
+        $("#openLaterClose").toggle();
+        building = false
+
+});
+$("#builderModal").on('shown.bs.modal', function () {
+ 	$("#builderIndicator").hide()
+ 	$("#builderStderr").hide()
+	$("#openLaterClose").hide()
+	$("#anotherclose").hide()
+ });
+
+$(createBuilderBot).click(function(){
+// we need to make sure that the dchText has been filled out
+dText= $('#dchText').text();
+	if ( dText === "" ){
+		alert("You must add changes to the changelog")
+	}else{
+		buildNow();
+		building = true
+
+}
+});
+
+function buildNow(){
+		$("#jumboQuestion").hide()
+	 	$("#builderIndicator").toggle();
+ 		$("#builderStderr").toggle();
+		$("#builder-sub-modal-title").text(machineID);
+		makeConnection();
+
+        	var cmd = "cd " + gitDir
++ " && ./packagehelper -c && packagehelper init "
++ " && cd - "
++ " && cd ../scripts/"
++ " && ./builder -b " + gitDir + buildName  
++ " && cd -"
++ " && echo \"JOSEPHDONETHISISDONEBUILDING\""
+		//console.log(cmd)
+        	sendMessage(cmd);
+        	ws.onmessage = function(arguments) {
+                	$("#builderIndicator").hide()
+		
+
+			// FIXME add in the name and what not to the header
+			buildInfo = arguments.data
+                	if ( buildInfo === "JOSEPHDONETHISISDONEBUILDING"){
+				building = false
+				console.log("Done Running")
+				$("#openLaterClose").toggle("slow");
+				$("#anotherclose").toggle("slow");
+				 ws.close();
+			}else{
+				console.log("Running")
+				$("#builderStderr").append(buildInfo + "\n")
+			}
+		}
+}
+
+$("#builderModal").on('hidden.bs.modal', function () {
+	buildName = ""
+	$("#jumboQuestion").toggle()
+	$("#builderIndicator").toggle();
+	$("#builderStderr").toggle();
+	$("#openLaterClose").toggle();
+	building = false
+
+});
+
+
+
+
+////////////////////////////
+// Main model
+////////////////////
+$("#machineModal").on('hidden.bs.modal', function () {
+    machineID = ""
+    machineInfo = ""
+    $("#stderr").text("")
+});
+$("#machineModal").on('shown.bs.modal', function () {
+        makeConnection();
+	var cmd = "cat /home/joseph/Git/IASDevelopment/mangoDebianPackages/" + machineID + "/debian/control"
+        sendMessage(cmd);
+        ws.onmessage = function(arguments) {
+		$("#indicator").hide()
+                machineInfo = arguments.data
+                $("#stderr").append("<p>"+ machineInfo+ "</p>")
+        }
+});
+////////////////////
+// Init calls packages.html
+//////////////////
+
+function getMachines(){
+	makeConnection();
+	sendMessage("cat /home/joseph/Git/IASDevelopment/mangoDebianPackages/packages.txt");
+	$("#mainIndicator").show()
+
+ws.onmessage = function(arguments) {
+	$("#mainIndicator").hide()
+	var word = arguments.data //.replace(" ",", ");
+  	var wordarray = new Array();
+  	wordarray = word.split(" ");
+  	for (var i = 0; i < wordarray.length; i++) 
+  	{
+  		 $("#mach").append("<a id='" + wordarray[i] + "' class='list-group-item' data-toggle='modal' data-target='#machineModal'><span>"+ wordarray[i] + "</span></a>");
+  	}
+   	$(".list-group-item").click(function(){
+		$("#indicator").show()
+                machineID = this.id;
+                $("#sub-modal-title").text(machineID);
+        });
+  }
+}
+
+
+getMachines()
+</script>

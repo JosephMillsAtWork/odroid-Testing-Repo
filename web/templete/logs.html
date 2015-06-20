@@ -1,0 +1,150 @@
+<img src="img/logo.png"></img>
+
+<button id='removeAllLog' type="button" class="btn btn-default">Remove All</button>
+
+<h1 id="title">Logs from Builds</h1>
+
+
+
+<!-- Modal -->
+<div id="machineModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h2 class="modal-title"></h2>
+      </div>
+      <div class="modal-body">
+	<h4 id="sub-modal-title"></h4>
+	<img src="../img/loader.gif" id="indicator" class="img-responsive center-block" />
+	<ul class="list-group" id="stderr">
+	</ul>
+      </div>
+      <div class="modal-footer">
+	<button id='showMore' type="button" class="btn btn-default">Show More</button>
+	<button id='removeLog' type="button" class='btn btn-default'>Remove</button> 
+	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	</div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div id="mach" class="list-group">
+<div class="form-group">
+                        <input class="form-control" id="searchinput" type="search" placeholder="Search Log Files..." />
+</div>
+<div id="mach" class="list-group">
+        <img src="../img/loader.gif" id="mainIndicator" class="img-responsive center-block" />
+
+<script>
+var logPath = "~/repoBuilder/logs/"
+var machineID = "";  
+var machineInfo = "";
+var largeLog = false
+
+
+$("#machineModal").on('shown.bs.modal', function () {
+        makeConnection();
+        var cmd = "tail  -n 23 ../logs/"+machineID + "| sed \"s|^.*─||g\" |sed \"s|^.*│||g\" | sed \"s|^.*┐||g\" | sed \"s|^.*┘||g\" | sed \"/^[[:space:]]*$/d\" "
+        sendMessage(cmd);
+
+        ws.onmessage = function(arguments) {
+                $("#indicator").hide()
+                machineInfo = arguments.data
+                $("#stderr").append(" <li class='list-group-item'>"+machineInfo+"</li>")
+        }
+});
+var app;
+function getMachines(){
+makeConnection();
+sendMessage("ls ../logs/");
+   $("#mainIndicator").show()
+   ws.onmessage = function(arguments) {
+        $("#mainIndicator").hide()
+        var word = arguments.data
+        var wordarray = new Array();
+        wordarray = word.split(" ");
+        for (var i = 0; i < wordarray.length; i++) 
+        {
+                 $("#mach").append("<a id='" + wordarray[i] + "' class='list-group-item' data-toggle='modal' data-target='#machineModal'  ><span>"+ wordarray[i] + "</span></a>")
+
+        }
+        $(".list-group-item").click(function(){
+                $("#indicator").show()
+                machineID = this.id;
+                $("#sub-modal-title").text(machineID);
+                $(".modal-title").text("Build Report");
+        });
+    }
+}// get machines
+
+
+// remove the log filefrom the system
+$("#removeAllLog").click(function(){
+   makeConnection();
+        var cmd = "cd  ../logs/ && rm *.build && cd -" 
+        sendMessage(cmd);
+        ws.onmessage = function(arguments) {
+                $("#indicator").hide()
+                machineInfo = arguments.data
+                $("#stderr").append(" <li class='list-group-item'>"+machineInfo+"</li>")
+        }
+});
+
+
+// remove the single log filefrom the system
+$("#removeLog").click(function(){
+   makeConnection();
+        var cmd = "rm "+logPath + machineID + "&& echo 's'"  
+        sendMessage(cmd);
+        ws.onmessage = function(arguments) {
+                $("#indicator").hide();
+   		$('#machineModal').modal('toggle');
+		getMachines();
+        }
+	ws.error = function(arguments){
+		console.log("ERROR " + arguments.data)
+	    	$("#indicator").hide();
+                $('#machineModal').modal('toggle');
+                getMachines();
+	}
+});
+
+
+// show the Full log file
+$("#showMore").click(function(){
+	
+$("#stderr").empty()	
+
+   makeConnection();
+        var cmd = "cat   ../logs/"+machineID 
+        sendMessage(cmd);
+        ws.onmessage = function(arguments) {
+                $("#indicator").hide()  
+                machineInfo = arguments.data
+                $("#stderr").append(" <li class='list-group-item'>"+machineInfo+"</li>")
+        }
+});
+
+
+
+$('#mach').btsListFilter('#searchinput', {itemChild: 'span'});
+
+
+
+$("#machineModal").on('hidden.bs.modal', function () {
+    machineID = ""
+    machineInfo = ""
+    $("#stderr").text("") 
+});
+
+
+
+getMachines()
+
+</script>
+</div>

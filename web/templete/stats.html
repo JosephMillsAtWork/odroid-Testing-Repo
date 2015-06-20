@@ -1,0 +1,508 @@
+<img src="img/logo.png"></img><h1 id="title">Stats From Builds</h1>
+<div class='row'>
+<div class='col-md-4'>
+<div id="card"> 
+<div class="front"> 
+ <div  class="thumbnail" style="background-color:#b9b9b9">
+      <img src="img/logo.png">
+      <div class="caption">
+        <h3>Build Stats</h3>
+        <p>Build stats for this auto builder.  Build stats include</p>        
+	<ul>
+                <li>build-attempted</li>
+                <li>build-failed</li>
+                <li>build-successful</li>
+                <li>build-total</li>
+        </ul>
+      </div>
+	<button id='buildStatsButton' type="button" class="btn btn-primary btn-lg btn-block">View Chart</button>
+    </div>
+</div>
+<div class="back">
+   <div  id='backThuimbnail' class="thumbnail" style="background-color:#b9b9b9">
+      <img src="img/logo.png">
+        <div class="caption">
+        <h3>Raw Numbers </h3>
+        <p>Raw numbers </p>
+        <ul id='buildBack' >
+        </ul>
+        </div>
+	<button id='buildStatsButtonBack' type="button" class="btn btn-primary btn-lg btn-block">View Chart</button>
+    </div> 
+</div>
+</div>
+</div>
+
+
+
+<div id="cell2" class='col-md-4'>  
+ <div class="thumbnail" style="background-color:#b9b9b9" >
+      <img src="img/logo.png">
+      <div class="caption">  
+        <h3>Average Stats</h3>
+        <ul>
+                <li>avg-build-space</li>
+                <li>avg-build-time</li> 
+                <li>avg-install-time</li>
+                <li>avg-package-time</li>
+                <li>avg-space</li>
+        </ul>
+      </div> 
+        <button id='avgStatsButton' type="button" class="btn btn-primary btn-lg btn-block">View Chart</button>
+    </div>  
+
+
+
+
+</div>
+
+
+<div id="cell3" class='col-md-4'>
+ <div class="thumbnail" style="background-color:#b9b9b9">
+      <img src="img/logo.png">
+      <div class="caption">
+        <h3>Lintian Stats</h3>
+        <p>Lintian is a tool that checks packages as they are built and reports back issues if it finds any. It also reports back if it pass's or fail's.The Lintian stats are as follow</p>
+        <ul>
+                <li>lintian-failed</li>
+                <li>lintian-successful</li>
+        </ul>
+      </div> 
+        <button id='lintianStatsButton' type="button" class="btn btn-primary btn-lg btn-block">View Chart</button>
+    </div>   
+
+
+
+
+
+</div>
+</div>
+
+</div>
+<div class="row">
+        <div id="chartOne" class='col-md-9'  style="margin-left:2%"></div>
+</div>
+<div class="row">
+        <div id="chartTwo" class='col-md-9'  style="margin-left:2%"></div>
+</div>
+<div class="row">
+        <div id="chartThree" class='col-md-9'  style="margin-left:2%"></div>
+</div>
+
+
+
+<script>
+function truncate(value)
+{
+    if ( value < 0)
+        return Math.ceil(value);
+
+    return Math.floor(value);
+}
+
+
+// global vars 
+var buildArray = [];
+var lintianArray = [];
+
+function hideAllCharts(){
+	$('#chartOne').hide();
+	$('#chartTwo').hide();
+	$('#chartThree').hide();
+}
+
+hideAllCharts();
+
+function initHide(){
+	$("#buildStatsButtonBack").hide()
+	$('back').hide()
+	$("#backThuimbnail").hide()
+}
+
+initHide();
+
+
+
+
+
+
+
+		
+var chart
+///////////
+// chart 1 
+////////////
+
+$(function () {
+    $('#chartOne').highcharts({
+        chart: {
+            type: 'column',
+            backgroundColor: "#b9b9b9",
+            margin: 75,
+            options3d: {
+                enabled: true,
+                alpha: 6,
+                beta: 6,
+                depth: 50,
+                viewDistance: 25
+            }
+        },
+        colors: [
+        '#286090'
+        ],
+        title: {
+            text: 'Build Stats'
+        },
+        subtitle: {
+            text: 'Get em all'
+        },
+        xAxis: {
+	   categories: ['Build Successful', 'Build Attempted', 'Build Total', 'build Failed' ],
+           color: 'green', 
+           title: {
+                text: null
+            }
+        },
+        yAxis: {
+            lineColor: '#707073',
+            minorGridLineColor: '#505053',
+            tickColor: '#707073',
+            tickWidth: 1,        
+            min: 0,
+            title: {
+                text: 'Averages',
+                align: 'high'
+            },
+            labels: {
+                overflow: 'justify'
+            }
+        },
+        tooltip: {
+            valueSuffix: ' '
+        },
+        legend: {
+            layout: 'horizontial',
+            align: 'bottom',
+            verticalAlign: 'bottom',
+            x: -40,
+            y: 100,
+            floating: true,
+            borderWidth: 1,
+            backgroundColor:'#B9B9B9',
+            shadow: true
+        },
+        credits: {
+            enabled: false
+        },
+        series: [{
+            name: " ",
+            data: [] 
+            }]
+});
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////
+//chart 2 
+///////////////
+
+$(function () {
+    $('#chartTwo').highcharts({
+        chart: {
+            type: 'column',
+	    backgroundColor: "#b9b9b9",
+            margin: 75,
+            options3d: {
+                enabled: true,
+                alpha: 6,
+                beta: 6,
+                depth: 50,
+                viewDistance: 25
+            }
+        },
+	colors: [
+        '#286090'
+        ],
+        title: {
+            text: 'Average Build Stats'
+        },
+        subtitle: {
+            text: 'Get em all'
+        },
+        xAxis: {
+           categories: ['Install Time', 'Avg Space', 'Build Space', 'Package Time', 'Build Time' ],
+           color: 'green', 
+	   title: {
+                text: null
+            }
+        },
+        yAxis: {
+	    lineColor: '#707073',
+      	    minorGridLineColor: '#505053',
+      	    tickColor: '#707073',
+      	    tickWidth: 1,        
+	    min: 0,
+            title: {
+                text: 'Averages',
+                align: 'high'
+            },
+            labels: {
+                overflow: 'justify'
+            }
+        },
+        tooltip: {
+            valueSuffix: ' '
+        },
+        legend: {
+            layout: 'horizontial',
+            align: 'bottom',
+            verticalAlign: 'bottom',
+            x: -40,
+            y: 100,
+            floating: true,
+            borderWidth: 1,
+            backgroundColor:'#B9B9B9',
+            shadow: true
+        },
+        credits: {
+            enabled: false
+        },
+        series: [{
+	    name: " ",
+            data: [] 
+            }]
+});
+});
+
+
+
+
+
+
+//////////////////////////////
+//chart 3 
+///////////////
+
+$(function () {
+    $('#chartThree').highcharts({
+        chart: {
+            type: 'column',
+            backgroundColor: "#b9b9b9",
+            margin: 75,
+            options3d: {
+                enabled: true,
+                alpha: 6,
+                beta: 6,
+                depth: 50,
+                viewDistance: 25
+            }
+        },
+        colors: ['#286090'],
+        title: {
+            text: 'Lintian Stats'
+        },
+        subtitle: {
+            text: 'Get em all'
+        },
+        xAxis: {
+           categories: ['Lintian Failed', 'Lintian Passed' ],
+           color: 'green', 
+           title: {
+                text: null
+            }
+        },
+        yAxis: {
+            lineColor: '#707073',
+            minorGridLineColor: '#505053',
+            tickColor: '#707073',
+            tickWidth: 1,        
+            min: 0,
+            title: {
+                text: 'Averages',
+                align: 'high'
+            },
+            labels: {
+                overflow: 'justify'
+            }
+        },
+        tooltip: {
+            valueSuffix: ' '
+        },
+        legend: {
+            layout: 'horizontial',
+            align: 'bottom',
+            verticalAlign: 'bottom',
+            x: -40,
+            y: 100,
+            floating: true,
+            borderWidth: 1,
+            backgroundColor:'#B9B9B9',
+            shadow: true
+        },
+        credits: {
+            enabled: false
+        },
+        series: [{
+            name: " ",
+            data: [] 
+            }]
+});
+});
+
+///////////// 
+//ui logic 
+//////////////
+	$("#avgStatsButton").click(function(){
+
+
+                avgArray = [];
+ 		avgCmd="for i in ../logs/stats/avg-install-time ../logs/stats/avg-space ../logs/stats/avg-build-space ../logs/stats/avg-package-time ../logs/stats/avg-build-time;do cat $i; done && echo \"JOSEPHTHISISDONE\""
+        	makeConnection();
+        	sendMessage(avgCmd);
+        	ws.onmessage = function(arguments) {
+                	var avgword = arguments.data
+		 	if ( avgword === "JOSEPHTHISISDONE" ){
+                        	 ws.close()
+				 console.log("Joseph The array " + avgArray)
+        			 hideAllCharts()
+				 var avChart = $('#chartTwo').highcharts();
+				 avChart.series[0].setData(avgArray);
+       				 $("#chartTwo").show("slow")
+                	}else{
+                        	var avgwordarray = new Array();    	
+				avgwordarray = avgword.split(" ");
+				for (var i = 0; i < avgwordarray.length; i++) 
+                        	{
+					var ds = truncate(avgwordarray[i])
+					avgArray.push(ds);
+                               		//  $("#mach").append("<li class='list-group-item'>"+ avgwordarray[i] + "</li>")
+                        	}
+			
+                	}
+        	}
+	
+	});
+
+
+
+
+
+// Build 
+$("#buildStatsButton").click(function(){
+        hideAllCharts()
+        $("back").show()
+        $("#backThuimbnail").show()
+        $("#card").flip({
+                 trigger: 'manual'
+        });
+        
+	$("#card").flip(true);
+        $('#chartOne').show("slow");
+        $("#buildStatsButtonBack").show()
+        
+        buildArray = [];
+        buildCmd="for i in ../logs/stats/build-successful ../logs/stats/build-attempted ../logs/stats/build-total ../logs/stats/build-failed; do cat $i; done && echo \"JOSEPHTHISISDONE\""
+        makeConnection();
+        sendMessage(buildCmd);
+                ws.onmessage = function(arguments) {
+                        var buildword = arguments.data
+                        if ( buildword === "JOSEPHTHISISDONE" ){
+                                 ws.close()
+                                 console.log("Joseph The array " + buildArray)
+                                 hideAllCharts()
+                                 var buChart = $('#chartOne').highcharts();
+                                 buChart.series[0].setData(buildArray);
+                                 $("#chartOne").show("slow")
+                        }else{
+                                var buildwordarray = new Array();         
+                                buildwordarray = buildword.split(" ");
+                                for (var i = 0; i < buildwordarray.length; i++) 
+                                {
+                                        var bd = truncate(buildwordarray[i])
+                                        buildArray.push(bd);
+                                        //$("#buildBack").append("<li class='list-group-item'>"+ buildwordarray[i] + "</li>")
+                                }
+
+                        }
+                }
+
+        });
+
+
+$("#buildStatsButtonBack").click(function(){
+        $("#card").flip(false);
+        $("#chartOne").hide("slow")
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/// Lintian 
+
+$("#lintianStatsButton").click(function(){
+        hideAllCharts()
+
+        lintianArray = [];
+        lintianCmd="for i in ../logs/stats/lintian-failed ../logs/stats/lintian-successful; do cat $i; done && echo \"JOSEPHTHISISDONE\""
+        makeConnection();
+        sendMessage(lintianCmd);
+                ws.onmessage = function(arguments) {
+                        var lintianword = arguments.data
+                        if ( lintianword === "JOSEPHTHISISDONE" ){
+                                 ws.close()
+                                 console.log("Joseph The array " + lintianArray)
+                                 hideAllCharts()
+                                 var lnChart = $('#chartThree').highcharts();
+                                 lnChart.series[0].setData(lintianArray);
+                                 $("#chartThree").show("slow")
+                        }else{
+                                var lintianwordarray = new Array();
+                                lintianwordarray = lintianword.split(" ");
+                                for (var i = 0; i < lintianwordarray.length; i++) 
+                                {
+                                        var bl = truncate(lintianwordarray[i])
+                                        lintianArray.push(bl);
+                                        //$("#buildBack").append("<li class='list-group-item'>"+ lintianwordarray[i] + "</li>")
+                                }
+
+                        }
+                }
+
+        });
+
+</script>
+
